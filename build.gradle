@@ -31,7 +31,10 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-actuator"
 	implementation 'org.springframework.integration:spring-integration-core' // para usar adaptadores
 
-	implementation 'com.google.cloud:spring-cloud-gcp-starter-pubsub'
+	implementation platform('com.google.cloud:spring-cloud-gcp-dependencies:7.1.0')
+    implementation 'com.google.cloud:spring-cloud-gcp-starter-pubsub'
+
+    implementation 'org.apache.avro:avro:1.11.3'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
