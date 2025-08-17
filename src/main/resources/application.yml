@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: eda-backend-publisher
+  cloud:
+    gcp:
+      project-id: eda-processor

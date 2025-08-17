@@ -18,8 +18,21 @@ repositories {
 	mavenCentral()
 }
 
+dependencyManagement {
+    imports {
+        mavenBom "com.google.cloud:spring-cloud-gcp-dependencies:5.7.0" // Ajusta versión según lo más reciente
+    }
+}
+
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+	implementation 'org.springframework.integration:spring-integration-core' // para usar adaptadores
+
+	implementation 'com.google.cloud:spring-cloud-gcp-starter-pubsub'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
