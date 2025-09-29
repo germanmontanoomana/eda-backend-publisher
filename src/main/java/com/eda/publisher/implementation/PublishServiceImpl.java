@@ -82,7 +82,7 @@ public class PublishServiceImpl implements PublishService {
             .build();
 
             //this.pubSubTemplate.publish("projects/eda-processor/topics/documents.create", pubsubMessage);
-            this.pubSubTemplate.publish("projects/eda-processor/topics/documents.test", "hola michi 2...");
+            this.pubSubTemplate.publish("projects/eda-processor/topics/documents.test", "Msg from publisher " + UUID.randomUUID().toString());
 
             return true;
         } catch (Exception e) {
