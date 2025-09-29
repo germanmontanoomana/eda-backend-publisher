@@ -1,0 +1,14 @@
+# cloudbuild.yaml
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build',
+    '-t', 'gcr.io/eda-backend-publisher/eda-backend-publisher:latest', # Reemplaza con el nombre de tu imagen
+    '.'
+  ]
+images:
+- 'gcr.io/eda-backend-publisher/eda-backend-publisher:latest'
+
+options:
+  # Envía los logs directamente a Cloud Logging
+  logging: NONE
