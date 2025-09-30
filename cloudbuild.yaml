@@ -1,22 +1,10 @@
 # cloudbuild.yaml
 steps:
-- name: 'gcr.io/cloud-builders/docker'
-  args: [
-    'build',
-    '-t', 'gcr.io/eda-backend-publisher/eda-backend-publisher:latest', # Reemplaza con el nombre de tu imagen
-    '.'
-  ]
-images:
-- 'gcr.io/eda-backend-publisher/eda-backend-publisher:latest'
+- name: 'gradle:8-jdk21'
+  id: 'Build JAR'
+  entrypoint: 'gradle'
+  args: ['clean', 'build']
 
 options:
   # Envía los logs directamente a Cloud Logging
   logging: NONE
-
-artifacts:
-  objects:
-    # Se usará el valor de la sustitución _ARTIFACTS_BUCKET
-    location: '${_ARTIFACTS_BUCKET}spring-boot/'
-    # La ruta al archivo JAR generado por Gradle
-    paths:
-      - 'build/libs/eda-backend-publisher.jar'
