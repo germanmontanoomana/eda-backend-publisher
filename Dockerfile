@@ -30,7 +30,7 @@ RUN addgroup --system spring && adduser --system --ingroup spring spring
 # *** CORRECTED LINE ***
 # Copy the JAR file from the 'builder' stage to the final image
 # Note the trailing slash to indicate the destination is a directory
-COPY --from=builder /app/build/libs/EdaBackendPublisher.jar /app/
+COPY --from=builder /app/build/libs/EdaBackendPublisher.jar /app/EdaBackendPublisher.jar
 
 # Run the application as the non-root 'spring' user
 USER spring:spring
@@ -39,5 +39,5 @@ USER spring:spring
 EXPOSE 8080
 
 # Define the command to run the application
-ENTRYPOINT ["java", "-jar", "EdaBackendPublisher.jar"]
+ENTRYPOINT ["java", "-jar", "/app/EdaBackendPublisher.jar"]
 
