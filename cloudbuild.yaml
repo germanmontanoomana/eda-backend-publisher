@@ -12,3 +12,9 @@ images:
 options:
   # Envía los logs directamente a Cloud Logging
   logging: NONE
+
+artifacts:
+  objects:
+    # La ruta al archivo JAR generado por Gradle
+    paths:
+      - 'build/libs/eda-backend-publisher.jar'
