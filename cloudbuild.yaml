@@ -11,4 +11,4 @@ images:
 
 options:
   # Envía los logs directamente a Cloud Logging
-  logging: CLOUD_LOGGING_ONLY
+  logging: NONE
