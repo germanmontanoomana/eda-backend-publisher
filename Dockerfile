@@ -34,7 +34,7 @@ ENV PORT=8080
 
 # Copy the JAR file from the build stage.
 # The destination is now a directory, so Docker knows to copy all .jar files into it.
-COPY --from=builder /app/build/libs/*.jar /app/app.jar
+COPY --from=build /app/build/libs/*.jar /app/app.jar
 
 # Define the command to run your application.
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
