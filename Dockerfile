@@ -1,39 +1,22 @@
-# -- STAGE 1: BUILD --
-# Use a full JDK 21 image with Gradle pre-installed for the build environment.
-FROM gradle:8-jdk21 AS build
-
-# Set the working directory inside the container.
+# =====================================================================
+# Stage 1: Build the Spring Boot application using the Gradle image
+# =====================================================================
+FROM gradle:8.8-jdk21-alpine AS builder
 WORKDIR /app
-
-# Copy the Gradle wrapper and project files needed for dependencies.
-# This improves caching and speeds up subsequent builds.
-COPY gradlew .
-COPY gradle/ gradle/
-COPY build.gradle settings.gradle ./
-
-# Download all dependencies without building the final JAR.
-# This allows Docker to cache this layer.
+COPY --chown=gradle:gradle gradlew .
+COPY --chown=gradle:gradle gradle/wrapper gradle/wrapper
+COPY --chown=gradle:gradle build.gradle settings.gradle /app/
 RUN gradle dependencies
+COPY --chown=gradle:gradle . /app
+RUN gradle clean build --no-daemon
 
-# Copy the project source code.
-COPY src ./src
-
-# Package the application into a JAR file.
-RUN gradle clean build
-
-# -- STAGE 2: RUN --
-# Use a minimal JRE 21 image for the runtime environment.
-FROM eclipse-temurin:21-jre-jammy AS run
-
-# Set the working directory.
+# =====================================================================
+# Stage 2: Create the final, lightweight, and secure runtime image
+# =====================================================================
+FROM openjdk:21-slim
 WORKDIR /app
+RUN addgroup --system spring && adduser --system --ingroup spring spring
+COPY --from=builder /app/build/libs/*.jar /app/app.jar
+USER spring:spring
 EXPOSE 8080
-
-#Environment variable for required port of Cloud Run
-ENV PORT=8080
-
-# Copy the built JAR from the builder stage
-COPY --from=builder /app/target/*.jar /app/app.jar
-
-# Define the entrypoint to run the Spring Boot application
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
