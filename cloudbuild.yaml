@@ -1,10 +1,17 @@
-# cloudbuild.yaml
 steps:
-- name: 'gradle:8-jdk21'
-  id: 'Build JAR'
-  entrypoint: 'gradle'
-  args: ['clean', 'build']
+# Build the Docker image
+- name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'build',
+    '-t',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/eda-backend-publisher/eda-backend-publisher:latest',
+    '.'
+  ]
 
+# Push the Docker image to Artifact Registry
+images:
+- 'europe-west1-docker.pkg.dev/$PROJECT_ID/eda-backend-publisher/eda-backend-publisher:latest'
+
+# Use Cloud Logging for build logs
 options:
-  # Envía los logs directamente a Cloud Logging
-  logging: NONE
+  logging: CLOUD_LOGGING_ONLY
