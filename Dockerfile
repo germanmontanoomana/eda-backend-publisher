@@ -27,10 +27,14 @@ FROM eclipse-temurin:21-jre-jammy AS run
 
 # Set the working directory.
 WORKDIR /app
+EXPOSE 8080
+
+#Environment variable for required port of Cloud Run
+ENV PORT=8080
 
 # Copy the JAR file from the build stage.
 # The destination is now a directory, so Docker knows to copy all .jar files into it.
-COPY --from=build /app/build/libs/*.jar /app/app/
+COPY --from=builder /app/build/libs/*.jar /app/app.jar
 
 # Define the command to run your application.
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
