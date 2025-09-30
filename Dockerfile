@@ -32,9 +32,8 @@ EXPOSE 8080
 #Environment variable for required port of Cloud Run
 ENV PORT=8080
 
-# Copy the JAR file from the build stage.
-# The destination is now a directory, so Docker knows to copy all .jar files into it.
-COPY --from=build /app/build/libs/*.jar /app/app.jar
+# Copy the built JAR from the builder stage
+COPY --from=builder /app/target/*.jar /app/app.jar
 
-# Define the command to run your application.
+# Define the entrypoint to run the Spring Boot application
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
