@@ -15,6 +15,8 @@ options:
 
 artifacts:
   objects:
+    # Se usará el valor de la sustitución _ARTIFACTS_BUCKET
+    location: '${_ARTIFACTS_BUCKET}spring-boot/'
     # La ruta al archivo JAR generado por Gradle
     paths:
       - 'build/libs/eda-backend-publisher.jar'
