@@ -1,39 +1,46 @@
-# -- STAGE 1: BUILD --
-# Use a full JDK 21 image with Gradle pre-installed for the build environment.
-FROM gradle:8-jdk21 AS build
+# =====================================================================
+# Stage 1: Build the Spring Boot application using the Gradle image
+# =====================================================================
+FROM gradle:8.8-jdk21-alpine AS builder
 
-# Set the working directory inside the container.
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the Gradle wrapper and project files needed for dependencies.
-# This improves caching and speeds up subsequent builds.
-COPY gradlew .
-COPY gradle/ gradle/
-COPY build.gradle settings.gradle ./
+# Copy the Gradle wrapper files to leverage caching.
+# If these files don't change, the dependencies don't need to be re-downloaded.
+COPY --chown=gradle:gradle gradlew .
+COPY --chown=gradle:gradle gradle/wrapper gradle/wrapper
 
-# Download all dependencies without building the final JAR.
-# This allows Docker to cache this layer.
+# Copy the build configuration files.
+COPY --chown=gradle:gradle build.gradle settings.gradle /app/
+
+# Download all dependencies without building the application.
+# This improves layer caching.
 RUN gradle dependencies
 
-# Copy the project source code.
-COPY src ./src
+# Copy the source code and build the application.
+COPY --chown=gradle:gradle . /app
+RUN gradle clean build --no-daemon
 
-# Package the application into a JAR file.
-RUN gradle clean build
+# =====================================================================
+# Stage 2: Create the final, lightweight, and secure runtime image
+# =====================================================================
+FROM openjdk:21-jre-slim
 
-# -- STAGE 2: RUN --
-# Use a minimal JRE 21 image for the runtime environment.
-FROM eclipse-temurin:21-jre-jammy AS run
-
-# Set the working directory.
+# Set the working directory for the application
 WORKDIR /app
+
+# Create a non-root user and group for security best practices
+RUN addgroup --system spring && adduser --system --ingroup spring spring
+
+# Copy the JAR file from the 'builder' stage to the final image
+COPY --from=builder /app/build/libs/*.jar /app/app.jar
+
+# Run the application as the non-root 'spring' user
+USER spring:spring
+
+# Expose the default Spring Boot port
 EXPOSE 8080
 
-#Environment variable for required port of Cloud Run
-ENV PORT=8080
-
-# Copy the built JAR from the builder stage
-COPY --from=builder /app/target/*.jar /app/app.jar
-
-# Define the entrypoint to run the Spring Boot application
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+# Define the command to run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
