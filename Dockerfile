@@ -29,7 +29,8 @@ FROM eclipse-temurin:21-jre-jammy AS run
 WORKDIR /app
 
 # Copy the JAR file from the build stage.
-COPY --from=build /app/build/libs/*.jar /app/app.jar
+# The destination is now a directory, so Docker knows to copy all .jar files into it.
+COPY --from=build /app/build/libs/*.jar /app/app/
 
 # Define the command to run your application.
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
